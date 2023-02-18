@@ -4,14 +4,14 @@
 int main()
 {
 	float* inputMatrix = nullptr;
-	float* outputMatrix;
+	float* outputMatrix = nullptr;
 	float* outputDerivativeMatrix = nullptr;
-	float* inputDerivativeMatrix;
+	float* inputDerivativeMatrix = nullptr;
 	
 	NeuralNetwork neuralNetwork(2, inputMatrix);
 
-	neuralNetwork.AddLayer(new LeakyReluLayer());
-	neuralNetwork.AddLayer(new LeakyReluLayer());
+	neuralNetwork.AddLayer(new LeakyReluLayer(2));
+	neuralNetwork.AddLayer(new LeakyReluLayer(1));
 	neuralNetwork.Print();
 
 	neuralNetwork.Initialize(outputMatrix, outputDerivativeMatrix, inputDerivativeMatrix);

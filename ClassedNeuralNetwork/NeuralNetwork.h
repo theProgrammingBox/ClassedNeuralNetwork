@@ -30,7 +30,7 @@ public:
 
 	void AddLayer(Layer* layer)
 	{
-		layers.push_back(layer);
+		layers.emplace_back(layer);
 	}
 
 	void Initialize(float* outputMatrix, float* outputDerivativeMatrix, float* inputDerivativeMatrix)
@@ -39,8 +39,8 @@ public:
 
 		for (uint32_t i = layers.size() - 1; i--;)
 		{
-			layers[i];
-			layers[i + 1];
+			/*layers[i];
+			layers[i + 1];*/
 		}
 	}
 
