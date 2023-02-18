@@ -99,3 +99,9 @@ void PrintMatrix(float* arr, uint32_t rows, uint32_t cols, const char* label) {
 	}
 	printf("\n");
 }
+
+struct DynamicLayerSpec
+{
+	uint32_t size;
+	float* matrix;
+};

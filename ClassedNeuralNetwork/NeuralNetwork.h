@@ -4,19 +4,13 @@
 class NeuralNetwork
 {
 public:
-	std::vector<Layer*> layers;
 	float* inputMatrix;
 	float* outputDerivativeMatrix;
+	std::vector<Layer*> layers;
 
-	struct DynamicLayerSpec
+	NeuralNetwork(uint32_t inputMatrixSize, float* inputMatrix)
 	{
-		uint32_t size;
-		float* matrix;
-	};
-
-	NeuralNetwork(uint32_t input, float* inputMatrix)
-	{
-		this->inputMatrix = new float[input];
+		this->inputMatrix = new float[inputMatrixSize];
 		inputMatrix = this->inputMatrix;
 	}
 	
@@ -39,8 +33,8 @@ public:
 
 		for (uint32_t i = layers.size() - 1; i--;)
 		{
-			/*layers[i];
-			layers[i + 1];*/
+			layers[i + 1]->AssignInputMatrix(layers[i]->GetOutputMatrix(), &dynamicLayerSpecs);
+			/*layers[i];*/
 		}
 	}
 
