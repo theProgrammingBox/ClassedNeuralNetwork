@@ -4,6 +4,7 @@
 /*
 TODO:
 1. export and import neural network
+2. Runge Kutta 4th order
 */
 
 int main()
@@ -25,8 +26,8 @@ int main()
 	float averageError = 0;
 	for (uint32_t i = GLOBAL::ITERATIONS; i--;)
 	{
-		inputMatrix[0] = GLOBAL::random.Rfloat(-1, 1);
-		inputMatrix[1] = GLOBAL::random.Rfloat(-1, 1);
+		inputMatrix[0] = GLOBAL::random.Rfloat(-10, 10);
+		inputMatrix[1] = GLOBAL::random.Rfloat(-10, 10);
 		neuralNetwork.ForwardPropagate();
 		outputDerivativeMatrix[0] = (inputMatrix[0] + inputMatrix[1]) * 0.5 - outputMatrix[0];
 		

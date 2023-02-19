@@ -13,11 +13,11 @@ public:
 	uint32_t computationMatrixSize;					// Size of the mass matrix for things that are not parameters
 	uint32_t parameterMatrixSize;					// Size of the mass matrix for parameters
 	uint32_t parameterDerivitiveMatrixSize;			// Size of the mass matrix for parameter derivitives
-	uint32_t parameterDerivitiveMatrixDisplacement;	// Displacement of the mass parameter matrix, for runge-kutta 4
+	uint32_t parameterDerivitiveMatrixDisplacement;	// Displacement of the mass parameter matrix, for Runge Kutta 4th order
 	float* computationMatrix;						// Mass matrix for things that are not parameters
 	float* parameterMatrix;							// Mass matrix for parameters
 	float* parameterDerivitiveMatrix;				// Mass matrix for parameter derivitives
-	float* parameterDerivitiveMatrixLocation;		// Location of the parameter derivitive matrix, for runge-kutta 4
+	float* parameterDerivitiveMatrixLocation;		// Location of the parameter derivitive matrix, for Runge Kutta 4th order
 	
 	std::vector<Layer*> layers;						// Layers of the neural network
 
@@ -79,7 +79,7 @@ public:
 			parameterMatrixSize += parameterInfo.matrixSize;
 		}
 		
-		// 4 times the number of parameters for runge-kutta 4
+		// 4 times the number of parameters for Runge Kutta 4th order
 		// mass matrixes allow for (simple clearing of data by using memset), (simple mass matrix initialization using cpuGenerateUniform), and (simple adding using cpuSaxpy)
 		parameterDerivitiveMatrixSize = parameterMatrixSize << 2;
 		computationMatrix = new float[computationMatrixSize];
