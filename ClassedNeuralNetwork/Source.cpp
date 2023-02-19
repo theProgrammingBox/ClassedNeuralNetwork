@@ -15,5 +15,12 @@ int main()
 	neuralNetwork.Initialize(outputMatrix, outputDerivativeMatrix, inputDerivativeMatrix);
 	neuralNetwork.Print();
 
+	inputMatrix[0] = 0;
+	inputMatrix[1] = 1;
+
+	neuralNetwork.ForwardPropagate();
+
+	PrintMatrix(outputMatrix, 1, 1, "Output Matrix");
+
 	return 0;
 }

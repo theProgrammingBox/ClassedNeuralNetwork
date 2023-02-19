@@ -127,28 +127,6 @@ public:
 
 	void BackPropagate(float dt) override
 	{
-		/*
-		cpuLeakyReluDerivative(productMatrix.matrix, activationDerivativeMatrix->matrix, productDerivativeMatrix.matrix, productDerivativeMatrix.totalSize);
-		cpuSgemmStridedBatched(
-			true, false,
-			inputDerivativeMatrix.columns, inputDerivativeMatrix.rows, productDerivativeMatrix.columns,
-			&GLOBAL::ONEF,
-			weightMatrix.matrix, weightMatrix.columns, 0,
-			productDerivativeMatrix.matrix, productDerivativeMatrix.columns, 0,
-			&GLOBAL::ZEROF,
-			inputDerivativeMatrix.matrix, inputDerivativeMatrix.columns, 0,
-			1);
-		cpuSgemmStridedBatched(
-			false, true,
-			weightDerivativeMatrix.columns, weightDerivativeMatrix.rows, inputMatrix->rows,
-			&GLOBAL::ONEF,
-			productDerivativeMatrix.matrix, productDerivativeMatrix.columns, 0,
-			inputMatrix->matrix, inputMatrix->columns, 0,
-			&GLOBAL::ONEF,
-			weightDerivativeMatrix.matrix, weightDerivativeMatrix.columns, 0,
-			1);
-		cpuSaxpy(biasDerivativeMatrix.totalSize, &GLOBAL::ONEF, productDerivativeMatrix.matrix, 1, biasDerivativeMatrix.matrix, 1);
-		*/
 		float* weightDerivativeMatrix = *dynamicDerivativeMatrixPointer + *weightDerivativeMatrixDisplacement;
 		float* biasDerivativeMatrix = *dynamicDerivativeMatrixPointer + *biasDerivativeMatrixDisplacement;
 

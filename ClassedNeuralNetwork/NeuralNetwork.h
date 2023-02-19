@@ -21,7 +21,7 @@ public:
 	
 	std::vector<Layer*> layers;
 
-	NeuralNetwork(uint32_t inputMatrixSize, float* inputMatrix)
+	NeuralNetwork(uint32_t inputMatrixSize, float*& inputMatrix)
 	{
 		this->inputMatrixSize = inputMatrixSize;
 		this->inputMatrix = new float[inputMatrixSize];
@@ -45,7 +45,7 @@ public:
 		layers.emplace_back(layer);
 	}
 
-	void Initialize(float* outputMatrix, float* outputDerivativeMatrix, float* inputDerivativeMatrix)
+	void Initialize(float*& outputMatrix, float*& outputDerivativeMatrix, float*& inputDerivativeMatrix)
 	{
 		std::vector<StaticMatrixInfo> staticParams;
 		std::vector<DynamicMatrixInfo> dynamicParams;
