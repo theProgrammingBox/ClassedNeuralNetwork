@@ -17,24 +17,24 @@ int main()
 	uint32_t index = 0;
 	float errors[100] = { 0 };
 	float averageError = 0;
-	for (uint32_t i = 1; i--;)
+	for (uint32_t i = 1000; i--;)
 	{
 		inputMatrix[0] = GLOBAL::random.Rfloat(-1, 1);
 		inputMatrix[1] = GLOBAL::random.Rfloat(-1, 1);
 		neuralNetwork.ForwardPropagate();
-		neuralNetwork.Print();
+		//neuralNetwork.Print();
 		outputDerivativeMatrix[0] = (inputMatrix[0] + inputMatrix[1]) * 0.5 - outputMatrix[0];
 		
-		/*averageError -= errors[index];
+		averageError -= errors[index];
 		errors[index] = abs(outputDerivativeMatrix[0]);
 		averageError += errors[index];
 		index -= (++index >= 100) * 100;
-		printf("error: %f\n", averageError * 0.01f);*/
+		printf("error: %f\n", averageError * 0.01f);/**/
 		
-		neuralNetwork.BackPropagate(0.1f);
-		neuralNetwork.Print();
+		neuralNetwork.BackPropagate(1.0f);
+		//neuralNetwork.Print();
 	}
-	//neuralNetwork.Print();
+	neuralNetwork.Print();
 
 	return 0;
 }

@@ -118,7 +118,6 @@ public:
 
 	void ForwardPropagate()
 	{
-		//ResetDynamicParamDerivitiveMatrix();
 		for (auto& layer : layers)
 			layer->ForwardPropagate();
 	}
@@ -128,14 +127,15 @@ public:
 		for (uint32_t i = layers.size(); i--;)
 			layers[i]->BackPropagate();
 		cpuSaxpy(dynamicMatrixSize, &dt, dynamicParamDerivitiveMatrix, 1, dynamicParamMatrix, 1);
+		ResetDynamicParamDerivitiveMatrix();
 	}
 
 	void Print()
 	{
 		//memset(dynamicParamDerivitiveMatrix, 0, dynamicMatrixDerivitiveSize * sizeof(float));
-		printf("------------------------------------\n");
+		/*printf("------------------------------------\n");
 		PrintMatrix(dynamicParamDerivitiveMatrix, 1, dynamicMatrixDerivitiveSize, "Dynamic Param Derivitive Matrix");
-		printf("------------------------------------\n");
+		printf("------------------------------------\n");*/
 		
 		for (auto& layer : layers)
 			layer->Print();
