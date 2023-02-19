@@ -10,8 +10,10 @@ public:
 	
 	uint32_t staticMatrixSize;
 	uint32_t dynamicMatrixSize;
-	float* dynamicMatrix;
 	float* staticMatrix;
+	float* dynamicParamMatrix;
+	float* dynamicParamDerivitiveMatrix;
+	float* currentDynamicParamDerivitiveLocation;
 	
 	std::vector<Layer*> layers;
 
@@ -29,8 +31,9 @@ public:
 		for (Layer* layer : layers)
 			delete layer;
 
-		delete[] dynamicMatrix;
 		delete[] staticMatrix;
+		delete[] dynamicParamMatrix;
+		delete[] dynamicParamDerivitiveMatrix;
 	}
 
 	void AddLayer(Layer* layer)
@@ -69,21 +72,28 @@ public:
 		}
 		
 		staticMatrix = new float[staticMatrixSize];
-		dynamicMatrix = new float[dynamicMatrixSize];
+		dynamicParamMatrix = new float[dynamicMatrixSize];
+		dynamicParamDerivitiveMatrix = new float[dynamicMatrixSize << 2];
 
 		float* staticMatrixIndex = staticMatrix;
 		for (StaticMatrixInfo& matrixInfo : staticParams)
 		{
-			matrixInfo.matrix = staticMatrixIndex;
+			*matrixInfo.matrix = staticMatrixIndex;
 			staticMatrixIndex += matrixInfo.matrixSize;
 		}
 
-		float* dynamicMatrixLocation = dynamicMatrix;
+		float* dynamicMatrixLocation = dynamicParamMatrix;
 		for (DynamicMatrixInfo& matrixInfo : dynamicParams)
 		{
-			matrixInfo.matrix = dynamicMatrixLocation;
+			*matrixInfo.matrix = dynamicMatrixLocation;
 			dynamicMatrixLocation += matrixInfo.matrixSize;
 		}
+		
+		cpuGenerateUniform(dynamicParamMatrix, dynamicMatrixSize, -1, 1);
+		PrintMatrix(dynamicParamMatrix, 1, dynamicMatrixSize, "Dynamic Matrix");
+
+		/*for (Layer* layer : layers)
+			layer->AssignDynamicDerivativeMatrix*/
 	}
 
 	void Print()

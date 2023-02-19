@@ -12,9 +12,8 @@ int main()
 
 	neuralNetwork.AddLayer(new LeakyReluLayer(2));
 	neuralNetwork.AddLayer(new LeakyReluLayer(1));
-	neuralNetwork.Print();
-
 	neuralNetwork.Initialize(outputMatrix, outputDerivativeMatrix, inputDerivativeMatrix);
+	neuralNetwork.Print();
 
 	return 0;
 }

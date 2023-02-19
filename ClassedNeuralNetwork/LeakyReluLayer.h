@@ -36,6 +36,7 @@ public:
 	{
 		this->inputMatrixSize = inputMatrixSize;
 		weightMatrixSize = inputMatrixSize * outputMatrixSize;
+		printf("LeakyReluLayer: inputMatrixSize = %d, outputMatrixSize = %d, weightMatrixSize = %d\n", inputMatrixSize, outputMatrixSize, weightMatrixSize);
 	}
 
 	uint32_t GetOutputMatrixSize() override
@@ -48,14 +49,14 @@ public:
 		std::vector<DynamicMatrixInfo>& dynamicParams
 	) override
 	{
-		staticParams.emplace_back(StaticMatrixInfo{ outputMatrixSize, productMatrix });
-		staticParams.emplace_back(StaticMatrixInfo{ outputMatrixSize, activationMatrix });
-		staticParams.emplace_back(StaticMatrixInfo{ outputMatrixSize, productDerivativeMatrix });
-		staticParams.emplace_back(StaticMatrixInfo{ inputMatrixSize, inputDerivativeMatrix });
+		staticParams.emplace_back(StaticMatrixInfo{ outputMatrixSize, &productMatrix });
+		staticParams.emplace_back(StaticMatrixInfo{ outputMatrixSize, &activationMatrix });
+		staticParams.emplace_back(StaticMatrixInfo{ outputMatrixSize, &productDerivativeMatrix });
+		staticParams.emplace_back(StaticMatrixInfo{ inputMatrixSize, &inputDerivativeMatrix });
 
-		dynamicParams.emplace_back(DynamicMatrixInfo{ weightMatrixSize, weightMatrix, 0 });
+		dynamicParams.emplace_back(DynamicMatrixInfo{ weightMatrixSize, &weightMatrix, 0 });
 		weightDerivativeMatrixDisplacement = &dynamicParams.back().displacement;
-		dynamicParams.emplace_back(DynamicMatrixInfo{ outputMatrixSize, biasMatrix, 0 });
+		dynamicParams.emplace_back(DynamicMatrixInfo{ outputMatrixSize, &biasMatrix, 0 });
 		biasDerivativeMatrixDisplacement = &dynamicParams.back().displacement;
 	}
 
@@ -87,5 +88,7 @@ public:
 	void Print() override
 	{
 		printf("LeakyReluLayer\n");
+		PrintMatrix(weightMatrix, inputMatrixSize, outputMatrixSize, "weightMatrix");
+		PrintMatrix(biasMatrix, 1, outputMatrixSize, "biasMatrix");
 	}
 };

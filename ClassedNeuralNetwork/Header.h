@@ -103,12 +103,12 @@ void PrintMatrix(float* arr, uint32_t rows, uint32_t cols, const char* label) {
 struct StaticMatrixInfo
 {
 	uint32_t matrixSize;
-	float* matrix;
+	float** matrix;
 };
 
 struct DynamicMatrixInfo
 {
 	uint32_t matrixSize;
-	float* matrix;
+	float** matrix;
 	uint32_t displacement;
 };
