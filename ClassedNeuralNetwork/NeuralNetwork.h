@@ -112,6 +112,7 @@ public:
 			layers[i + 1]->dynamicDerivativeMatrixPointer = &currentDynamicParamDerivitiveLocation;
 		}
 		layers[0]->AssignInputMatrix(inputMatrix);
+		layers[0]->dynamicDerivativeMatrixPointer = &currentDynamicParamDerivitiveLocation;
 	}
 
 	void ForwardPropagate()

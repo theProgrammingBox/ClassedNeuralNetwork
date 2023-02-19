@@ -136,11 +136,10 @@ public:
 		PrintMatrix(biasMatrix, 1, outputMatrixSize, "biasMatrix");
 		PrintMatrix(productMatrix, 1, outputMatrixSize, "productMatrix");
 		PrintMatrix(activationMatrix, 1, outputMatrixSize, "activationMatrix");
-
-		PrintMatrix(*(this->dynamicDerivativeMatrixPointer), 1, 1, "dynamicDerivativeMatrixPointer");
-		/*float* weightDerivativeMatrix = *dynamicDerivativeMatrixPointer + weightDerivativeMatrixDisplacement;
+		
+		float* weightDerivativeMatrix = *dynamicDerivativeMatrixPointer + weightDerivativeMatrixDisplacement;
 		float* biasDerivativeMatrix = *dynamicDerivativeMatrixPointer + biasDerivativeMatrixDisplacement;
 		PrintMatrix(weightDerivativeMatrix, inputMatrixSize, outputMatrixSize, "weightDerivativeMatrix");
-		PrintMatrix(biasDerivativeMatrix, 1, outputMatrixSize, "biasDerivativeMatrix");*/
+		PrintMatrix(biasDerivativeMatrix, 1, outputMatrixSize, "biasDerivativeMatrix");
 	}
 };
