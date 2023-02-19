@@ -1,6 +1,11 @@
 #include "NeuralNetwork.h"
 #include "LeakyReluLayer.h"
 
+/*
+TODO:
+1. 
+*/
+
 int main()
 {
 	float* inputMatrix = nullptr;
@@ -12,6 +17,7 @@ int main()
 
 	neuralNetwork.AddLayer(new LeakyReluLayer(2));
 	neuralNetwork.AddLayer(new LeakyReluLayer(1));
+	neuralNetwork.Print();
 	neuralNetwork.Initialize(outputMatrix, outputDerivativeMatrix, inputDerivativeMatrix);
 
 	uint32_t index = 0;
@@ -32,7 +38,6 @@ int main()
 		
 		neuralNetwork.BackPropagate(1.0f);
 	}
-	neuralNetwork.Print();
 
 	return 0;
 }
