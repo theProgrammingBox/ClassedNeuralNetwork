@@ -3,7 +3,7 @@
 
 /*
 TODO:
-1. 
+1. export and import neural network
 */
 
 int main()
@@ -23,7 +23,7 @@ int main()
 	uint32_t index = 0;
 	float errors[100] = { 0 };
 	float averageError = 0;
-	for (uint32_t i = 1000; i--;)
+	for (uint32_t i = GLOBAL::ITERATIONS; i--;)
 	{
 		inputMatrix[0] = GLOBAL::random.Rfloat(-1, 1);
 		inputMatrix[1] = GLOBAL::random.Rfloat(-1, 1);
@@ -36,7 +36,7 @@ int main()
 		index -= (++index >= 100) * 100;
 		printf("error: %f\n", averageError * 0.01f);
 		
-		neuralNetwork.BackPropagate(1.0f);
+		neuralNetwork.BackPropagate(GLOBAL::LEARNING_RATE);
 	}
 
 	return 0;

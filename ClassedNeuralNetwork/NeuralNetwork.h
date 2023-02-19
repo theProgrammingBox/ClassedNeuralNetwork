@@ -124,11 +124,11 @@ public:
 			layer->ForwardPropagate();
 	}
 
-	void BackPropagate(float dt)
+	void BackPropagate(float scalar)
 	{
 		for (uint32_t i = layers.size(); i--;)
 			layers[i]->BackPropagate();
-		cpuSaxpy(parameterMatrixSize, &dt, parameterDerivitiveMatrix, 1, parameterMatrix, 1);
+		cpuSaxpy(parameterMatrixSize, &scalar, parameterDerivitiveMatrix, 1, parameterMatrix, 1);
 		memset(parameterDerivitiveMatrix, 0, parameterDerivitiveMatrixSize * sizeof(float));
 	}
 
