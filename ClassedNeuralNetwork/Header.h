@@ -110,5 +110,5 @@ struct DynamicMatrixInfo
 {
 	uint32_t matrixSize;
 	float** matrix;
-	uint32_t displacement;
+	uint32_t* displacement;
 };

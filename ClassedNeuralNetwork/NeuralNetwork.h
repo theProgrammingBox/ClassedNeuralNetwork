@@ -73,7 +73,7 @@ public:
 		dynamicMatrixSize = 0;
 		for (DynamicMatrixInfo& matrixInfo : dynamicParams)
 		{
-			matrixInfo.displacement = dynamicMatrixSize;
+			*matrixInfo.displacement = dynamicMatrixSize;
 			dynamicMatrixSize += matrixInfo.matrixSize;
 		}
 		
@@ -82,6 +82,7 @@ public:
 		staticMatrix = new float[staticMatrixSize];
 		dynamicParamMatrix = new float[dynamicMatrixSize];
 		dynamicParamDerivitiveMatrix = new float[dynamicMatrixDerivitiveSize];
+		currentDynamicParamDerivitiveLocation = dynamicParamDerivitiveMatrix;
 		ResetDynamicParamDerivitiveMatrix();
 
 		float* staticMatrixIndex = staticMatrix;
@@ -113,12 +114,6 @@ public:
 		layers[0]->AssignInputMatrix(inputMatrix);
 	}
 
-	void Print()
-	{
-		for (auto& layer : layers)
-			layer->Print();
-	}
-
 	void ForwardPropagate()
 	{
 		for (auto& layer : layers)
@@ -129,6 +124,13 @@ public:
 	{
 		for (auto& layer : layers)
 			layer->BackPropagate(dt);
+	}
+
+	void Print()
+	{
+		PrintMatrix(inputMatrix, 1, inputMatrixSize, "Input Matrix");
+		for (auto& layer : layers)
+			layer->Print();
 	}
 
 private:

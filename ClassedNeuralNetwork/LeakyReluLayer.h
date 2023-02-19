@@ -19,8 +19,8 @@ public:
 	float* productDerivativeMatrix;
 	float* inputDerivativeMatrix;
 
-	uint32_t* weightDerivativeMatrixDisplacement;
-	uint32_t* biasDerivativeMatrixDisplacement;
+	uint32_t weightDerivativeMatrixDisplacement;
+	uint32_t biasDerivativeMatrixDisplacement;
 	
 	LeakyReluLayer(uint32_t outputMatrixSize)
 	{
@@ -51,10 +51,8 @@ public:
 		staticParams.emplace_back(StaticMatrixInfo{ outputMatrixSize, &productDerivativeMatrix });
 		staticParams.emplace_back(StaticMatrixInfo{ inputMatrixSize, &inputDerivativeMatrix });
 
-		dynamicParams.emplace_back(DynamicMatrixInfo{ weightMatrixSize, &weightMatrix, 0 });
-		weightDerivativeMatrixDisplacement = &dynamicParams.back().displacement;
-		dynamicParams.emplace_back(DynamicMatrixInfo{ outputMatrixSize, &biasMatrix, 0 });
-		biasDerivativeMatrixDisplacement = &dynamicParams.back().displacement;
+		dynamicParams.emplace_back(DynamicMatrixInfo{ weightMatrixSize, &weightMatrix, &weightDerivativeMatrixDisplacement });
+		dynamicParams.emplace_back(DynamicMatrixInfo{ outputMatrixSize, &biasMatrix, &biasDerivativeMatrixDisplacement });
 	}
 
 	float* GetOutputMatrix() override
@@ -76,13 +74,6 @@ public:
 	{
 		this->activationDerivativeMatrix = outputDerivativeMatrix;
 	}
-
-	void Print() override
-	{
-		printf("LeakyReluLayer\n");
-		PrintMatrix(weightMatrix, inputMatrixSize, outputMatrixSize, "weightMatrix");
-		PrintMatrix(biasMatrix, 1, outputMatrixSize, "biasMatrix");
-	}
 	
 	void cpuLeakyRelu(float* input, float* output, uint32_t size)
 	{
@@ -98,20 +89,6 @@ public:
 
 	void ForwardPropagate() override
 	{
-		/*
-		cpuSgemmStridedBatched(
-			false, false,
-			productMatrix.columns, productMatrix.rows, inputMatrix->columns,
-			&GLOBAL::ONEF,
-			weightMatrix.matrix, weightMatrix.columns, 0,
-			inputMatrix->matrix, inputMatrix->columns, 0,
-			&GLOBAL::ZEROF,
-			productMatrix.matrix, productMatrix.columns, 0,
-			1);
-		cpuSaxpy(productMatrix.totalSize, &GLOBAL::ONEF, biasMatrix.matrix, 1, productMatrix.matrix, 1);
-		cpuLeakyRelu(productMatrix.matrix, activationMatrix.matrix, activationMatrix.totalSize);
-		*/
-
 		cpuSgemmStridedBatched(
 			false, false,
 			outputMatrixSize, 1, inputMatrixSize,
@@ -127,8 +104,8 @@ public:
 
 	void BackPropagate(float dt) override
 	{
-		float* weightDerivativeMatrix = *dynamicDerivativeMatrixPointer + *weightDerivativeMatrixDisplacement;
-		float* biasDerivativeMatrix = *dynamicDerivativeMatrixPointer + *biasDerivativeMatrixDisplacement;
+		/*float* weightDerivativeMatrix = dynamicDerivativeMatrixPointer + weightDerivativeMatrixDisplacement;
+		float* biasDerivativeMatrix = dynamicDerivativeMatrixPointer + biasDerivativeMatrixDisplacement;
 
 		cpuLeakyReluDerivative(productMatrix, activationDerivativeMatrix, productDerivativeMatrix, outputMatrixSize);
 		cpuSgemmStridedBatched(
@@ -149,6 +126,21 @@ public:
 			&GLOBAL::ONEF,
 			weightDerivativeMatrix, outputMatrixSize, 0,
 			1);
-		cpuSaxpy(outputMatrixSize, &GLOBAL::ONEF, productDerivativeMatrix, 1, biasDerivativeMatrix, 1);
+		cpuSaxpy(outputMatrixSize, &GLOBAL::ONEF, productDerivativeMatrix, 1, biasDerivativeMatrix, 1);*/
+	}
+
+	void Print() override
+	{
+		printf("LeakyReluLayer\n\n");
+		PrintMatrix(weightMatrix, inputMatrixSize, outputMatrixSize, "weightMatrix");
+		PrintMatrix(biasMatrix, 1, outputMatrixSize, "biasMatrix");
+		PrintMatrix(productMatrix, 1, outputMatrixSize, "productMatrix");
+		PrintMatrix(activationMatrix, 1, outputMatrixSize, "activationMatrix");
+
+		PrintMatrix(*(this->dynamicDerivativeMatrixPointer), 1, 1, "dynamicDerivativeMatrixPointer");
+		/*float* weightDerivativeMatrix = *dynamicDerivativeMatrixPointer + weightDerivativeMatrixDisplacement;
+		float* biasDerivativeMatrix = *dynamicDerivativeMatrixPointer + biasDerivativeMatrixDisplacement;
+		PrintMatrix(weightDerivativeMatrix, inputMatrixSize, outputMatrixSize, "weightDerivativeMatrix");
+		PrintMatrix(biasDerivativeMatrix, 1, outputMatrixSize, "biasDerivativeMatrix");*/
 	}
 };
