@@ -124,7 +124,9 @@ public:
 	void BackPropagate(float dt)
 	{
 		for (auto& layer : layers)
-			layer->BackPropagate(dt);
+			layer->BackPropagate();
+		cpuSaxpy(dynamicMatrixSize, &dt, dynamicParamDerivitiveMatrix, 1, dynamicParamMatrix, 1);
+		ResetDynamicParamDerivitiveMatrix();
 	}
 
 	void Print()
@@ -132,6 +134,7 @@ public:
 		PrintMatrix(inputMatrix, 1, inputMatrixSize, "Input Matrix");
 		for (auto& layer : layers)
 			layer->Print();
+		//PrintMatrix(outputDerivativeMatrix, 1, layers.back()->GetOutputMatrixSize(), "Output Derivative Matrix");
 	}
 
 private:

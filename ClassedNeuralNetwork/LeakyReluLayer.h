@@ -33,7 +33,6 @@ public:
 	{
 		this->inputMatrixSize = inputMatrixSize;
 		weightMatrixSize = inputMatrixSize * outputMatrixSize;
-		printf("LeakyReluLayer: inputMatrixSize = %d, outputMatrixSize = %d, weightMatrixSize = %d\n", inputMatrixSize, outputMatrixSize, weightMatrixSize);
 	}
 
 	uint32_t GetOutputMatrixSize() override
@@ -102,7 +101,7 @@ public:
 		cpuLeakyRelu(productMatrix, activationMatrix, outputMatrixSize);
 	}
 
-	void BackPropagate(float dt) override
+	void BackPropagate() override
 	{
 		float* weightDerivativeMatrix = *dynamicDerivativeMatrixPointer + weightDerivativeMatrixDisplacement;
 		float* biasDerivativeMatrix = *dynamicDerivativeMatrixPointer + biasDerivativeMatrixDisplacement;
@@ -144,5 +143,6 @@ public:
 		PrintMatrix(weightDerivativeMatrix, inputMatrixSize, outputMatrixSize, "weightDerivativeMatrix");
 		PrintMatrix(biasDerivativeMatrix, 1, outputMatrixSize, "biasDerivativeMatrix");
 		PrintMatrix(inputDerivativeMatrix, 1, inputMatrixSize, "inputDerivativeMatrix");
+		printf("\n");
 	}
 };

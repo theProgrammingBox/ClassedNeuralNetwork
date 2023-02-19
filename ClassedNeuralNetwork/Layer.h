@@ -20,7 +20,7 @@ public:
 	virtual void AssignOutputDerivativeMatrix(float* outputDerivativeMatrix) = 0;
 
 	virtual void ForwardPropagate() = 0;
-	virtual void BackPropagate(float dt) = 0;
+	virtual void BackPropagate() = 0;
 	
 	virtual void Print() = 0;
 

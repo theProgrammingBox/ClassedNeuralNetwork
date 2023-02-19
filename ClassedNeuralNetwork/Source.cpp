@@ -14,12 +14,16 @@ int main()
 	neuralNetwork.AddLayer(new LeakyReluLayer(1));
 	neuralNetwork.Initialize(outputMatrix, outputDerivativeMatrix, inputDerivativeMatrix);
 
-	inputMatrix[0] = 0;
-	inputMatrix[1] = 1;
-
-	neuralNetwork.ForwardPropagate();
-	neuralNetwork.BackPropagate(0.1f);
-	neuralNetwork.Print();
+	for (uint32_t i = 2; i--;)
+	{
+		inputMatrix[0] = 0;
+		inputMatrix[1] = 1;
+		neuralNetwork.ForwardPropagate();
+		outputDerivativeMatrix[0] = ((outputMatrix[0] < 0.5f) << 1) - 1.0f;
+		neuralNetwork.BackPropagate(0.1f);
+		neuralNetwork.Print();
+		printf("\n");
+	}
 
 	return 0;
 }
