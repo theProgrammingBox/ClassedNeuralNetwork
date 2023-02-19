@@ -18,6 +18,7 @@ int main()
 	inputMatrix[1] = 1;
 
 	neuralNetwork.ForwardPropagate();
+	neuralNetwork.BackPropagate(0.1f);
 	neuralNetwork.Print();
 
 	return 0;

@@ -105,14 +105,14 @@ public:
 		cpuGenerateUniform(dynamicParamMatrix, dynamicMatrixSize, -1, 1);
 
 		layers.back()->AssignOutputDerivativeMatrix(outputDerivativeMatrix);
+		layers.back()->dynamicDerivativeMatrixPointer = &currentDynamicParamDerivitiveLocation;
 		for (uint32_t i = layers.size() - 1; i--;)
 		{
 			layers[i + 1]->AssignInputMatrix(layers[i]->GetOutputMatrix());
-			layers[i + 1]->AssignOutputDerivativeMatrix(layers[i]->GetInputDerivativeMatrix());
-			layers[i + 1]->dynamicDerivativeMatrixPointer = &currentDynamicParamDerivitiveLocation;
+			layers[i]->dynamicDerivativeMatrixPointer = &currentDynamicParamDerivitiveLocation;
+			layers[i]->AssignOutputDerivativeMatrix(layers[i + 1]->GetInputDerivativeMatrix());
 		}
 		layers[0]->AssignInputMatrix(inputMatrix);
-		layers[0]->dynamicDerivativeMatrixPointer = &currentDynamicParamDerivitiveLocation;
 	}
 
 	void ForwardPropagate()

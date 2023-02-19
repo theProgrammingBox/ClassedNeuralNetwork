@@ -104,8 +104,8 @@ public:
 
 	void BackPropagate(float dt) override
 	{
-		/*float* weightDerivativeMatrix = dynamicDerivativeMatrixPointer + weightDerivativeMatrixDisplacement;
-		float* biasDerivativeMatrix = dynamicDerivativeMatrixPointer + biasDerivativeMatrixDisplacement;
+		float* weightDerivativeMatrix = *dynamicDerivativeMatrixPointer + weightDerivativeMatrixDisplacement;
+		float* biasDerivativeMatrix = *dynamicDerivativeMatrixPointer + biasDerivativeMatrixDisplacement;
 
 		cpuLeakyReluDerivative(productMatrix, activationDerivativeMatrix, productDerivativeMatrix, outputMatrixSize);
 		cpuSgemmStridedBatched(
@@ -126,7 +126,7 @@ public:
 			&GLOBAL::ONEF,
 			weightDerivativeMatrix, outputMatrixSize, 0,
 			1);
-		cpuSaxpy(outputMatrixSize, &GLOBAL::ONEF, productDerivativeMatrix, 1, biasDerivativeMatrix, 1);*/
+		cpuSaxpy(outputMatrixSize, &GLOBAL::ONEF, productDerivativeMatrix, 1, biasDerivativeMatrix, 1);
 	}
 
 	void Print() override
@@ -139,7 +139,10 @@ public:
 		
 		float* weightDerivativeMatrix = *dynamicDerivativeMatrixPointer + weightDerivativeMatrixDisplacement;
 		float* biasDerivativeMatrix = *dynamicDerivativeMatrixPointer + biasDerivativeMatrixDisplacement;
+		
+		PrintMatrix(productDerivativeMatrix, 1, outputMatrixSize, "productDerivativeMatrix");
 		PrintMatrix(weightDerivativeMatrix, inputMatrixSize, outputMatrixSize, "weightDerivativeMatrix");
 		PrintMatrix(biasDerivativeMatrix, 1, outputMatrixSize, "biasDerivativeMatrix");
+		PrintMatrix(inputDerivativeMatrix, 1, inputMatrixSize, "inputDerivativeMatrix");
 	}
 };
