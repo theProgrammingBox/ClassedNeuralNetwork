@@ -18,7 +18,8 @@ public:
 	virtual void AssignInputMatrix(float* inputDerivativeMatrix) = 0;
 	virtual float* GetInputDerivativeMatrix() = 0;
 	virtual void AssignOutputDerivativeMatrix(float* outputDerivativeMatrix) = 0;
-	virtual void AssignDynamicDerivativeMatrix(float* dynamicDerivativeMatrix) = 0;
 	
 	virtual void Print() = 0;
+
+	float** dynamicDerivativeMatrixPointer;
 };

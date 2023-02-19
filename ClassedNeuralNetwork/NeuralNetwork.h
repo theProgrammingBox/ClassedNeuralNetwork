@@ -10,6 +10,7 @@ public:
 	
 	uint32_t staticMatrixSize;
 	uint32_t dynamicMatrixSize;
+	uint32_t dynamicParamDerivitiveDisplacement;
 	float* staticMatrix;
 	float* dynamicParamMatrix;
 	float* dynamicParamDerivitiveMatrix;
@@ -71,6 +72,7 @@ public:
 			dynamicMatrixSize += matrixInfo.matrixSize;
 		}
 		
+		dynamicParamDerivitiveDisplacement = 0;
 		staticMatrix = new float[staticMatrixSize];
 		dynamicParamMatrix = new float[dynamicMatrixSize];
 		dynamicParamDerivitiveMatrix = new float[dynamicMatrixSize << 2];
@@ -92,8 +94,14 @@ public:
 		cpuGenerateUniform(dynamicParamMatrix, dynamicMatrixSize, -1, 1);
 		PrintMatrix(dynamicParamMatrix, 1, dynamicMatrixSize, "Dynamic Matrix");
 
-		/*for (Layer* layer : layers)
-			layer->AssignDynamicDerivativeMatrix*/
+		layers.back()->AssignOutputDerivativeMatrix(outputDerivativeMatrix);
+		for (uint32_t i = layers.size() - 1; i--;)
+		{
+			layers[i + 1]->AssignInputMatrix(layers[i]->GetOutputMatrix());
+			layers[i + 1]->AssignOutputDerivativeMatrix(layers[i]->GetInputDerivativeMatrix());
+			layers[i + 1]->dynamicDerivativeMatrixPointer = &currentDynamicParamDerivitiveLocation;
+		}
+		layers[0]->AssignInputMatrix(inputMatrix);
 	}
 
 	void Print()

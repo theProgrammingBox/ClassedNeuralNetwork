@@ -21,7 +21,6 @@ public:
 
 	uint32_t* weightDerivativeMatrixDisplacement;
 	uint32_t* biasDerivativeMatrixDisplacement;
-	float* dynamicDerivativeMatrix;
 	/*float* weightDerivativeMatrix;
 	float* biasDerivativeMatrix;*/
 	
@@ -78,11 +77,6 @@ public:
 	void AssignOutputDerivativeMatrix(float* outputDerivativeMatrix) override
 	{
 		this->activationDerivativeMatrix = outputDerivativeMatrix;
-	}
-
-	void AssignDynamicDerivativeMatrix(float* dynamicDerivativeMatrix) override
-	{
-		this->dynamicDerivativeMatrix = dynamicDerivativeMatrix;
 	}
 
 	void Print() override
