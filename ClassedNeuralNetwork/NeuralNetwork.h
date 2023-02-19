@@ -6,10 +6,13 @@ class NeuralNetwork
 public:
 	uint32_t inputMatrixSize;
 	float* inputMatrix;
+	float* outputMatrix;
 	float* outputDerivativeMatrix;
+	float* inputDerivativeMatrix;
 	
 	uint32_t staticMatrixSize;
 	uint32_t dynamicMatrixSize;
+	uint32_t dynamicMatrixDerivitiveSize;
 	uint32_t dynamicParamDerivitiveDisplacement;
 	float* staticMatrix;
 	float* dynamicParamMatrix;
@@ -47,6 +50,8 @@ public:
 		std::vector<StaticMatrixInfo> staticParams;
 		std::vector<DynamicMatrixInfo> dynamicParams;
 
+		outputDerivativeMatrix = new float[layers.back()->GetOutputMatrixSize()];
+
 		for (uint32_t i = layers.size() - 1; i--;)
 		{
 			layers[i + 1]->AssignInputMatrixSize(layers[i]->GetOutputMatrixSize());
@@ -72,10 +77,12 @@ public:
 			dynamicMatrixSize += matrixInfo.matrixSize;
 		}
 		
+		dynamicMatrixDerivitiveSize = dynamicMatrixSize << 2;
 		dynamicParamDerivitiveDisplacement = 0;
 		staticMatrix = new float[staticMatrixSize];
 		dynamicParamMatrix = new float[dynamicMatrixSize];
-		dynamicParamDerivitiveMatrix = new float[dynamicMatrixSize << 2];
+		dynamicParamDerivitiveMatrix = new float[dynamicMatrixDerivitiveSize];
+		ResetDynamicParamDerivitiveMatrix();
 
 		float* staticMatrixIndex = staticMatrix;
 		for (StaticMatrixInfo& matrixInfo : staticParams)
@@ -90,9 +97,11 @@ public:
 			*matrixInfo.matrix = dynamicMatrixLocation;
 			dynamicMatrixLocation += matrixInfo.matrixSize;
 		}
+
+		outputMatrix = layers.back()->GetOutputMatrix();
+		inputDerivativeMatrix = layers[0]->GetInputDerivativeMatrix();
 		
 		cpuGenerateUniform(dynamicParamMatrix, dynamicMatrixSize, -1, 1);
-		PrintMatrix(dynamicParamMatrix, 1, dynamicMatrixSize, "Dynamic Matrix");
 
 		layers.back()->AssignOutputDerivativeMatrix(outputDerivativeMatrix);
 		for (uint32_t i = layers.size() - 1; i--;)
@@ -108,5 +117,23 @@ public:
 	{
 		for (auto& layer : layers)
 			layer->Print();
+	}
+
+	void ForwardPropagate()
+	{
+		for (auto& layer : layers)
+			layer->ForwardPropagate();
+	}
+
+	void BackPropagate(float dt)
+	{
+		for (auto& layer : layers)
+			layer->BackPropagate(dt);
+	}
+
+private:
+	void ResetDynamicParamDerivitiveMatrix()
+	{
+		memset(dynamicParamDerivitiveMatrix, 0, dynamicMatrixDerivitiveSize);
 	}
 };

@@ -21,5 +21,8 @@ public:
 	
 	virtual void Print() = 0;
 
+	virtual void ForwardPropagate() = 0;
+	virtual void BackPropagate(float dt) = 0;
+
 	float** dynamicDerivativeMatrixPointer;
 };
