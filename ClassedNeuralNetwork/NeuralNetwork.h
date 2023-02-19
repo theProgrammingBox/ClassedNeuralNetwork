@@ -50,7 +50,8 @@ public:
 		std::vector<StaticMatrixInfo> staticParams;
 		std::vector<DynamicMatrixInfo> dynamicParams;
 
-		outputDerivativeMatrix = new float[layers.back()->GetOutputMatrixSize()];
+		this->outputDerivativeMatrix = new float[layers.back()->GetOutputMatrixSize()];
+		outputDerivativeMatrix = this->outputDerivativeMatrix;
 
 		for (uint32_t i = layers.size() - 1; i--;)
 		{
@@ -84,6 +85,8 @@ public:
 		dynamicParamDerivitiveMatrix = new float[dynamicMatrixDerivitiveSize];
 		currentDynamicParamDerivitiveLocation = dynamicParamDerivitiveMatrix;
 		ResetDynamicParamDerivitiveMatrix();
+		
+		cpuGenerateUniform(dynamicParamMatrix, dynamicMatrixSize, -1, 1);
 
 		float* staticMatrixIndex = staticMatrix;
 		for (StaticMatrixInfo& matrixInfo : staticParams)
@@ -101,8 +104,6 @@ public:
 
 		outputMatrix = layers.back()->GetOutputMatrix();
 		inputDerivativeMatrix = layers[0]->GetInputDerivativeMatrix();
-		
-		cpuGenerateUniform(dynamicParamMatrix, dynamicMatrixSize, -1, 1);
 
 		layers.back()->AssignOutputDerivativeMatrix(outputDerivativeMatrix);
 		layers.back()->dynamicDerivativeMatrixPointer = &currentDynamicParamDerivitiveLocation;
@@ -117,6 +118,7 @@ public:
 
 	void ForwardPropagate()
 	{
+		ResetDynamicParamDerivitiveMatrix();
 		for (auto& layer : layers)
 			layer->ForwardPropagate();
 	}
@@ -126,7 +128,6 @@ public:
 		for (auto& layer : layers)
 			layer->BackPropagate();
 		cpuSaxpy(dynamicMatrixSize, &dt, dynamicParamDerivitiveMatrix, 1, dynamicParamMatrix, 1);
-		ResetDynamicParamDerivitiveMatrix();
 	}
 
 	void Print()
@@ -134,7 +135,7 @@ public:
 		PrintMatrix(inputMatrix, 1, inputMatrixSize, "Input Matrix");
 		for (auto& layer : layers)
 			layer->Print();
-		//PrintMatrix(outputDerivativeMatrix, 1, layers.back()->GetOutputMatrixSize(), "Output Derivative Matrix");
+		PrintMatrix(outputDerivativeMatrix, 1, layers.back()->GetOutputMatrixSize(), "Output Derivative Matrix");
 	}
 
 private:
