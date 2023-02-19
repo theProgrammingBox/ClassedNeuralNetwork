@@ -106,11 +106,7 @@ public:
 		float* weightDerivativeMatrix = *dynamicDerivativeMatrixPointer + weightDerivativeMatrixDisplacement;
 		float* biasDerivativeMatrix = *dynamicDerivativeMatrixPointer + biasDerivativeMatrixDisplacement;
 
-		/*printf("------------------------------------\n");
-		PrintMatrix(productDerivativeMatrix, 1, outputMatrixSize, "productDerivativeMatrix");
-		PrintMatrix(activationDerivativeMatrix, 1, outputMatrixSize, "activationDerivativeMatrix");*/
 		cpuLeakyReluDerivative(productMatrix, activationDerivativeMatrix, productDerivativeMatrix, outputMatrixSize);
-		//PrintMatrix(productDerivativeMatrix, 1, outputMatrixSize, "productDerivativeMatrix");
 		cpuSgemmStridedBatched(
 			true, false,
 			inputMatrixSize, 1, outputMatrixSize,
@@ -129,8 +125,6 @@ public:
 			&GLOBAL::ONEF,
 			weightDerivativeMatrix, outputMatrixSize, 0,
 			1);
-		/*PrintMatrix(weightDerivativeMatrix, inputMatrixSize, outputMatrixSize, "weightDerivativeMatrix");
-		printf("------------------------------------\n");*/
 		cpuSaxpy(outputMatrixSize, &GLOBAL::ONEF, productDerivativeMatrix, 1, biasDerivativeMatrix, 1);
 	}
 

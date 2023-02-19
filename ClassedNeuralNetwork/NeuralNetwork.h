@@ -132,11 +132,6 @@ public:
 
 	void Print()
 	{
-		//memset(dynamicParamDerivitiveMatrix, 0, dynamicMatrixDerivitiveSize * sizeof(float));
-		/*printf("------------------------------------\n");
-		PrintMatrix(dynamicParamDerivitiveMatrix, 1, dynamicMatrixDerivitiveSize, "Dynamic Param Derivitive Matrix");
-		printf("------------------------------------\n");*/
-		
 		for (auto& layer : layers)
 			layer->Print();
 		printf("\n\n");
