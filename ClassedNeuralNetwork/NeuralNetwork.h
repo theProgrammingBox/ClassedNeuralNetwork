@@ -138,4 +138,17 @@ public:
 			layer->Print();
 		//printf("\n\n");
 	}
+
+	void Export(const char* fileName)
+	{
+		// first save the number of layers, then save their type/details, finally save parameterMatrix mass matrix
+		std::ofstream file(fileName, std::ios::out | std::ios::binary);
+		uint32_t numberOfLayers = layers.size();
+		file.write((char*)&numberOfLayers, sizeof(uint32_t));
+		for (auto& layer : layers)
+			layer->Export(file);
+		//
+		file.write((char*)parameterMatrix, parameterMatrixSize * sizeof(float));
+		file.close();
+	}
 };

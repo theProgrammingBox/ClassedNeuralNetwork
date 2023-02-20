@@ -2,6 +2,7 @@
 #include "Random.h"
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 void cpuSgemmStridedBatched(
 	bool transB, bool transA,

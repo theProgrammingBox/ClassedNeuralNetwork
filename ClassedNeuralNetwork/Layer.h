@@ -19,4 +19,5 @@ public:
 	virtual void ForwardPropagate() = 0;
 	virtual void BackPropagate() = 0;
 	virtual void Print() = 0;
+	virtual void Export(std::ofstream& file) = 0;
 };

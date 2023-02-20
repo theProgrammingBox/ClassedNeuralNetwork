@@ -155,4 +155,9 @@ public:
 		PrintMatrix(activationDerivativeMatrix, 1, outputMatrixSize, "activationDerivativeMatrix");
 		printf("\n");*/
 	}
+
+	void Export(std::ofstream& file) override
+	{
+		file.write((char*)&inputMatrixSize, sizeof(uint32_t));
+	}
 };

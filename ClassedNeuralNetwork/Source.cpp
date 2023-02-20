@@ -39,6 +39,8 @@ int main()
 		
 		neuralNetwork.BackPropagate(GLOBAL::LEARNING_RATE);
 	}
+	
+	neuralNetwork.Export("neuralNetwork.txt");
 
 	return 0;
 }
