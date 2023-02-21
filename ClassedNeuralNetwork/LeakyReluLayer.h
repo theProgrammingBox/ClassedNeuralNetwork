@@ -9,16 +9,16 @@ public:
 	uint32_t weightMatrixSize;	// Defined in network initialization during AssignInputMatrixSize
 	
 	float* inputMatrix;					// Defined in network initialization during AssignInputMatrix
+	float* weightMatrix;				// Defined in network initialization with the help of ParameterInfo and parameterMatrix
 	float* productMatrix;				// Defined in network initialization with the help of ComputationInfo and computationMatrix
+	float* biasMatrix;					// Defined in network initialization with the help of ParameterInfo and parameterMatrix
 	float* activationMatrix;			// Defined in network initialization with the help of ComputationInfo and computationMatrix
-	float* activationDerivativeMatrix;	// Defined in network initialization with the help of ComputationInfo and computationMatrix
+	float* activationDerivativeMatrix;	// Defined in network initialization during AssignOutputDerivativeMatrix
 	float* productDerivativeMatrix;		// Defined in network initialization with the help of ComputationInfo and computationMatrix
+	float* biasDerivativeMatrix;		// Defined in network initialization with the help of ParameterInfo and parameterMatrix
+	float* weightDerivativeMatrix;		// Defined in network initialization with the help of ParameterInfo and parameterMatrix
 	float* inputDerivativeMatrix;		// Defined in network initialization with the help of ComputationInfo and computationMatrix
 	
-	float* weightMatrix;	// Defined in network initialization with the help of ParameterInfo and parameterMatrix
-	float* biasMatrix;		// Defined in network initialization with the help of ParameterInfo and parameterMatrix
-	uint32_t weightDerivativeMatrixDisplacement;	// Defined in network initialization with the help of ParameterInfo and parameterMatrix
-	uint32_t biasDerivativeMatrixDisplacement;		// Defined in network initialization with the help of ParameterInfo and parameterMatrix
 	
 	LeakyReluLayer(uint32_t outputMatrixSize)
 	{
@@ -40,16 +40,18 @@ public:
 		return outputMatrixSize;
 	}
 
-	void LoadLayerSpecs(std::vector<ComputationInfo>& staticParams, std::vector<ParameterInfo>& dynamicParams) override
+	void LoadLayerSpecs(std::vector<PartitionData> partitionDatas) override
 	{
 		// adds all parameters related to this layer that is not the input matrix or output derivative matrix because they are defined by other layers or the network
-		staticParams.emplace_back(ComputationInfo{ outputMatrixSize, &productMatrix });
-		staticParams.emplace_back(ComputationInfo{ outputMatrixSize, &activationMatrix });
-		staticParams.emplace_back(ComputationInfo{ outputMatrixSize, &productDerivativeMatrix });
-		staticParams.emplace_back(ComputationInfo{ inputMatrixSize, &inputDerivativeMatrix });
+		partitionDatas.emplace_back(PartitionData{ weightMatrixSize, &weightMatrix });
+		partitionDatas.emplace_back(PartitionData{ outputMatrixSize, &productMatrix });
+		partitionDatas.emplace_back(PartitionData{ outputMatrixSize, &biasMatrix });
+		partitionDatas.emplace_back(PartitionData{ outputMatrixSize, &activationMatrix });
+		partitionDatas.emplace_back(PartitionData{ outputMatrixSize, &productDerivativeMatrix });
+		partitionDatas.emplace_back(PartitionData{ outputMatrixSize, &biasDerivativeMatrix });
+		partitionDatas.emplace_back(PartitionData{ weightMatrixSize, &weightDerivativeMatrix });
+		partitionDatas.emplace_back(PartitionData{ inputMatrixSize, &inputDerivativeMatrix });
 
-		dynamicParams.emplace_back(ParameterInfo{ weightMatrixSize, &weightMatrix, &weightDerivativeMatrixDisplacement });
-		dynamicParams.emplace_back(ParameterInfo{ outputMatrixSize, &biasMatrix, &biasDerivativeMatrixDisplacement });
 	}
 
 	float* GetOutputMatrix() override
@@ -109,10 +111,6 @@ public:
 		// then use output derivative matrix to calculate the product derivative matrix and bias derivative matrix
 		// finally use the product derivative matrix to calculate the input derivative and weight derivative
 		// parameter gradients are added instead of replaces due to batch gradient descent
-		
-		float* weightDerivativeMatrix = *parameterDerivitiveMatrixPointer + weightDerivativeMatrixDisplacement;
-		float* biasDerivativeMatrix = *parameterDerivitiveMatrixPointer + biasDerivativeMatrixDisplacement;
-
 		cpuLeakyReluDerivative(productMatrix, activationDerivativeMatrix, productDerivativeMatrix, outputMatrixSize);
 		cpuSgemmStridedBatched(
 			true, false,

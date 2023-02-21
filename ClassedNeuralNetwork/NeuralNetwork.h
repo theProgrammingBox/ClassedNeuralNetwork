@@ -12,13 +12,11 @@ public:
 	
 	uint32_t computationMatrixSize;					// Size of the mass matrix for things that are not parameters
 	uint32_t parameterMatrixSize;					// Size of the mass matrix for parameters
-	uint32_t parameterDerivitiveMatrixSize;			// Size of the mass matrix for parameter derivitives
 	uint32_t rungeKuttaStep;
 	float* computationMatrix;						// Mass matrix for things that are not parameters
 	float* parameterMatrix;							// Mass matrix for parameters
 	float* tempParameterMatrix;						// Temporary mass matrix for parameters, for Runge Kutta 4th order
 	float* parameterDerivitiveMatrix;				// Mass matrix for parameter derivitives
-	float* parameterDerivitiveMatrixLocation;		// Location of the parameter derivitive matrix, for Runge Kutta 4th order
 	
 	std::vector<Layer*> layers;						// Layers of the neural network
 
@@ -55,19 +53,20 @@ public:
 		// first creates outputDerivativeMatrix using the last layer and updates the user reference for use outside the class
 		// next updates the input sizes of the layers, then loads the layer specs, then creates the mass matrixes
 		// finally, updates the layer variables bases on the mass matrixes and updates outputMatrix and inputDerivativeMatrix for use outside the class
-		
-		std::vector<ComputationInfo> ComputationSpecs;
-		std::vector<ParameterInfo> ParameterSpecs;
+
+		std::vector<PartitionData> computationPartitionData;
+		std::vector<PartitionData> parameterPartitionData;
+		std::vector<PartitionData> parameterDerivitivePartitionData;
 
 		this->outputDerivativeMatrix = new float[layers.back()->GetOutputMatrixSize()];
 		outputDerivativeMatrix = this->outputDerivativeMatrix;
 
 		layers[0]->AssignInputMatrixSize(inputMatrixSize);
-		layers[0]->LoadLayerSpecs(ComputationSpecs, ParameterSpecs);
+		layers[0]->LoadLayerSpecs(partitionDatas);
 		for (uint32_t layer = 1; layer < layers.size(); layer++)
 		{
 			layers[layer]->AssignInputMatrixSize(layers[layer - 1]->GetOutputMatrixSize());
-			layers[layer]->LoadLayerSpecs(ComputationSpecs, ParameterSpecs);
+			layers[layer]->LoadLayerSpecs(partitionDatas);
 		}
 
 		computationMatrixSize = 0;
@@ -81,17 +80,13 @@ public:
 			parameterMatrixSize += parameterInfo.matrixSize;
 		}
 		
-		// 4 times the number of parameters for Runge Kutta 4th order
-		// mass matrixes allow for (simple clearing of data by using memset), (simple mass matrix initialization using cpuGenerateUniform), and (simple adding using cpuSaxpy)
 		rungeKuttaStep = 0;
-		parameterDerivitiveMatrixSize = parameterMatrixSize << 2;
 		computationMatrix = new float[computationMatrixSize];
 		parameterMatrix = new float[parameterMatrixSize];
 		tempParameterMatrix = new float[parameterMatrixSize];
-		parameterDerivitiveMatrix = new float[parameterDerivitiveMatrixSize];
-		parameterDerivitiveMatrixLocation = parameterDerivitiveMatrix;
-		parameterDerivitiveMatrixDisplacement = 0;
+		parameterDerivitiveMatrix = new float[parameterMatrixSize];
 		cpuGenerateUniform(parameterMatrix, parameterMatrixSize, -1, 1);
+		memcpy(tempParameterMatrix, parameterMatrix, parameterMatrixSize * sizeof(float));
 
 		float* computationMatrixIndex = computationMatrix;
 		for (ComputationInfo& computationInfo : ComputationSpecs)

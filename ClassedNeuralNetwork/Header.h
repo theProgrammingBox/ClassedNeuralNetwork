@@ -75,31 +75,23 @@ float invSqrt(float number)
 	return tmp * 0.703952253f * (2.38924456f - number * tmp * tmp);
 }
 
-struct ComputationInfo
+struct PartitionData
 {
 	uint32_t matrixSize;
 	float** matrix;
 };
-
-struct ParameterInfo
-{
-	uint32_t matrixSize;
-	float** matrix;
-	uint32_t* displacement;
-};
-
 namespace GLOBAL
 {
 	Random random(Random::MakeSeed());
 	constexpr float ZEROF = 0.0f;
 	constexpr float ONEF = 1.0f;
-	constexpr float TWOF = 2.0f;
 
 	constexpr float LEARNING_RATE = 0.1f;
 	constexpr uint32_t ITERATIONS = 1900;
 	constexpr uint32_t BATCHES = 1;
 	float GRADIENT_SCALAR = LEARNING_RATE * invSqrt(BATCHES);
 	float HALF_GRADIENT_SCALAR = GRADIENT_SCALAR * 0.5f;
+	float THIRD_GRADIENT_SCALAR = GRADIENT_SCALAR * 0.33333333333333333333333333333333f;
 	float SIXTH_GRADIENT_SCALAR = GRADIENT_SCALAR * 0.16666666666666666666666666666667f;
 }
 
