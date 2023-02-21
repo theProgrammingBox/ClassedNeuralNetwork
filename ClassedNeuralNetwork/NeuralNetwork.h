@@ -13,9 +13,10 @@ public:
 	uint32_t computationMatrixSize;					// Size of the mass matrix for things that are not parameters
 	uint32_t parameterMatrixSize;					// Size of the mass matrix for parameters
 	uint32_t parameterDerivitiveMatrixSize;			// Size of the mass matrix for parameter derivitives
-	uint32_t parameterDerivitiveMatrixDisplacement;	// Displacement of the mass parameter matrix, for Runge Kutta 4th order
+	uint32_t rungeKuttaStep;
 	float* computationMatrix;						// Mass matrix for things that are not parameters
 	float* parameterMatrix;							// Mass matrix for parameters
+	float* tempParameterMatrix;						// Temporary mass matrix for parameters, for Runge Kutta 4th order
 	float* parameterDerivitiveMatrix;				// Mass matrix for parameter derivitives
 	float* parameterDerivitiveMatrixLocation;		// Location of the parameter derivitive matrix, for Runge Kutta 4th order
 	
@@ -39,6 +40,7 @@ public:
 
 		delete[] computationMatrix;
 		delete[] parameterMatrix;
+		delete[] tempParameterMatrix;
 		delete[] parameterDerivitiveMatrix;
 	}
 
@@ -81,13 +83,14 @@ public:
 		
 		// 4 times the number of parameters for Runge Kutta 4th order
 		// mass matrixes allow for (simple clearing of data by using memset), (simple mass matrix initialization using cpuGenerateUniform), and (simple adding using cpuSaxpy)
+		rungeKuttaStep = 0;
 		parameterDerivitiveMatrixSize = parameterMatrixSize << 2;
 		computationMatrix = new float[computationMatrixSize];
 		parameterMatrix = new float[parameterMatrixSize];
+		tempParameterMatrix = new float[parameterMatrixSize];
 		parameterDerivitiveMatrix = new float[parameterDerivitiveMatrixSize];
 		parameterDerivitiveMatrixLocation = parameterDerivitiveMatrix;
 		parameterDerivitiveMatrixDisplacement = 0;
-		memset(parameterDerivitiveMatrix, 0, parameterDerivitiveMatrixSize * sizeof(float));
 		cpuGenerateUniform(parameterMatrix, parameterMatrixSize, -1, 1);
 
 		float* computationMatrixIndex = computationMatrix;
@@ -97,11 +100,11 @@ public:
 			computationMatrixIndex += computationInfo.matrixSize;
 		}
 
-		float* dynamicMatrixLocation = parameterMatrix;
+		float* parameterMatrixLocation = tempParameterMatrix;
 		for (ParameterInfo& parameterInfo : ParameterSpecs)
 		{
-			*parameterInfo.matrix = dynamicMatrixLocation;
-			dynamicMatrixLocation += parameterInfo.matrixSize;
+			*parameterInfo.matrix = parameterMatrixLocation;
+			parameterMatrixLocation += parameterInfo.matrixSize;
 		}
 
 		outputMatrix = layers.back()->GetOutputMatrix();
@@ -120,6 +123,12 @@ public:
 
 	void ForwardPropagate()
 	{
+		switch (rungeKuttaStep)
+		{
+		case 0:
+			memcpy(tempParameterMatrix, parameterMatrix, parameterMatrixSize * sizeof(float));
+			break;
+		}
 		for (auto& layer : layers)
 			layer->ForwardPropagate();
 	}
@@ -128,8 +137,20 @@ public:
 	{
 		for (uint32_t i = layers.size(); i--;)
 			layers[i]->BackPropagate();
-		cpuSaxpy(parameterMatrixSize, &scalar, parameterDerivitiveMatrix, 1, parameterMatrix, 1);
-		memset(parameterDerivitiveMatrix, 0, parameterDerivitiveMatrixSize * sizeof(float));
+		/*cpuSaxpy(parameterMatrixSize, &scalar, parameterDerivitiveMatrix, 1, parameterMatrix, 1);
+		memset(parameterDerivitiveMatrix, 0, parameterDerivitiveMatrixSize * sizeof(float));*/
+		switch (rungeKuttaStep)
+		{
+		case 0:
+			cpuSaxpy(parameterMatrixSize, &GLOBAL::HALF_GRADIENT_SCALAR, parameterDerivitiveMatrix, 1, tempParameterMatrix, 1);
+			break;
+		case 1:
+			cpuSaxpy(parameterMatrixSize, &GLOBAL::HALF_GRADIENT_SCALAR, parameterDerivitiveMatrix, 1, parameterMatrix, 1);
+			cpuSaxpy(parameterMatrixSize, &GLOBAL::HALF_GRADIENT_SCALAR, parameterDerivitiveMatrix + parameterMatrixSize, 1, tempParameterMatrix, 1);
+			break;
+		}
+		rungeKuttaStep -= (++rungeKuttaStep == 4) << 2;
+		parameterDerivitiveMatrixLocation = parameterDerivitiveMatrix + rungeKuttaStep * parameterMatrixSize;
 	}
 
 	void Print()
@@ -139,7 +160,7 @@ public:
 		//printf("\n\n");
 	}
 
-	void Export(const char* fileName)
+	/*void Export(const char* fileName)
 	{
 		// first save the number of layers, then save their type/details, finally save parameterMatrix mass matrix
 		std::ofstream file(fileName, std::ios::out | std::ios::binary);
@@ -150,5 +171,5 @@ public:
 		//
 		file.write((char*)parameterMatrix, parameterMatrixSize * sizeof(float));
 		file.close();
-	}
+	}*/
 };
