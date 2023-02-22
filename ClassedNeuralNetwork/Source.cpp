@@ -19,32 +19,39 @@ int main()
 	neuralNetwork.AddLayer(new LeakyReluLayer(3));
 	neuralNetwork.AddLayer(new LeakyReluLayer(1));
 	neuralNetwork.Initialize(outputMatrix, outputDerivativeMatrix, inputDerivativeMatrix);
-
-	uint32_t index = 0;
-	float errors[100] = { 0 };
-	float averageError = 0;
-	for (uint32_t i = GLOBAL::ITERATIONS; i--;)
+	
+	std::ofstream file("data.txt", std::ios::out | std::ios::binary);
+	
+	uint32_t index;
+	float errors[100];
+	float averageError;
+	for (uint32_t run = 10; run--;)
 	{
-		inputMatrix[0] = GLOBAL::random.Ruint32() & 1;
-		inputMatrix[1] = GLOBAL::random.Ruint32() & 1;
-		//printf("input: %f %f\n", inputMatrix[0], inputMatrix[1]);
+		index = 0;
+		memset(errors, 0, 100 * sizeof(float));
+		averageError = 0;
+
+		neuralNetwork.Reset();
 		
-		neuralNetwork.ForwardPropagate();
-		bool expectedOutput = bool(inputMatrix[0]) ^ bool(inputMatrix[1]);
-		outputDerivativeMatrix[0] = float(expectedOutput) - outputMatrix[0];
-		/*printf("output: %f\n", outputMatrix[0]);
-		printf("expected output: %f\n", float(expectedOutput));
-		printf("output derivative: %f\n", outputDerivativeMatrix[0]);*/
-		
-		averageError -= errors[index];
-		errors[index] = abs(outputDerivativeMatrix[0]);
-		averageError += errors[index];
-		index -= (++index >= 100) * 100;
-		printf("error: %f\n", averageError * 0.01f);
-		//printf("error: %f\n", abs(outputDerivativeMatrix[0]));
-		
-		neuralNetwork.BackPropagate();
-		//neuralNetwork.Print();
+		for (uint32_t i = GLOBAL::ITERATIONS; i--;)
+		{
+			inputMatrix[0] = GLOBAL::random.Ruint32() & 1;
+			inputMatrix[1] = GLOBAL::random.Ruint32() & 1;
+
+			neuralNetwork.ForwardPropagate();
+			bool expectedOutput = bool(inputMatrix[0]) ^ bool(inputMatrix[1]);
+			outputDerivativeMatrix[0] = float(expectedOutput) - outputMatrix[0];
+
+			averageError -= errors[index];
+			errors[index] = abs(outputDerivativeMatrix[0]);
+			averageError += errors[index];
+			index *= ++index != 100;
+			if (i % 1000 == 0)
+				printf("error: %f\n", averageError * 0.01f);
+
+			neuralNetwork.BackPropagate();
+		}
+		printf("-------------------------------------------------------------\n");
 	}
 	
 	//neuralNetwork.Export("neuralNetwork.txt");

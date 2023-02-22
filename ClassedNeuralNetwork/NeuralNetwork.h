@@ -79,14 +79,11 @@ public:
 		for (PartitionData& parameterPartition : parameterPartitionData)
 			parameterMatrixSize += parameterPartition.matrixSize;
 		
-		rungeKuttaStep = 0;
 		computationMatrix = new float[computationMatrixSize];
 		parameterMatrix = new float[parameterMatrixSize];
 		tempParameterMatrix = new float[parameterMatrixSize];
 		savedParameterMatrix = new float[parameterMatrixSize];
 		parameterDerivitiveMatrix = new float[parameterMatrixSize];
-		cpuGenerateUniform(parameterMatrix, parameterMatrixSize, -1, 1);
-		memcpy(tempParameterMatrix, parameterMatrix, parameterMatrixSize * sizeof(float));
 
 		float* computationMatrixIndex = computationMatrix;
 		for (PartitionData& computationPartition : computationPartitionData)
@@ -119,6 +116,8 @@ public:
 			layers[i]->AssignOutputDerivativeMatrix(layers[i + 1]->GetInputDerivativeMatrix());
 		}
 		layers[0]->AssignInputMatrix(inputMatrix);
+		
+		Reset();
 	}
 
 	void ForwardPropagate()
@@ -151,6 +150,18 @@ public:
 		for (auto& layer : layers)
 			layer->Print();
 		printf("\n\n");
+	}
+
+	void Reset()
+	{
+		rungeKuttaStep = 0;
+		Random();
+		memcpy(tempParameterMatrix, parameterMatrix, parameterMatrixSize * sizeof(float));
+	}
+
+	void Random()
+	{
+		cpuGenerateUniform(parameterMatrix, parameterMatrixSize, -1, 1);
 	}
 
 	/*void Export(const char* fileName)
