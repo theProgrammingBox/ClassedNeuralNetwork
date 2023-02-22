@@ -20,12 +20,14 @@ int main()
 	neuralNetwork.AddLayer(new LeakyReluLayer(1));
 	neuralNetwork.Initialize(outputMatrix, outputDerivativeMatrix, inputDerivativeMatrix);
 	
-	std::ofstream file("data.txt", std::ios::out | std::ios::binary);
+	std::ofstream dataFile("data.txt", std::ios::out | std::ios::binary);
+	dataFile.write((char*)&GLOBAL::RUNS, 4);
+	dataFile.write((char*)&GLOBAL::ITERATIONS, 4);
 	
 	uint32_t index;
 	float errors[100];
 	float averageError;
-	for (uint32_t run = 10; run--;)
+	for (uint32_t run = GLOBAL::RUNS; run--;)
 	{
 		index = 0;
 		memset(errors, 0, 100 * sizeof(float));
@@ -47,12 +49,14 @@ int main()
 			averageError += errors[index];
 			index *= ++index != 100;
 			if (i % 1000 == 0)
-				printf("error: %f\n", averageError * 0.01f);
+				//printf("error: %f\n", averageError * 0.01f);
+				dataFile.write((char*)&averageError, 4);
 
 			neuralNetwork.BackPropagate();
 		}
-		printf("-------------------------------------------------------------\n");
+		//printf("-------------------------------------------------------------\n");
 	}
+	dataFile.close();
 	
 	//neuralNetwork.Export("neuralNetwork.txt");
 

@@ -133,14 +133,14 @@ public:
 			memcpy(savedParameterMatrix, parameterMatrix, parameterMatrixSize * sizeof(float));
 		memcpy(tempParameterMatrix, savedParameterMatrix, parameterMatrixSize * sizeof(float));
 		if (rungeKuttaStep != 0)
-			cpuSaxpy(parameterMatrixSize, &GLOBAL::applied[rungeKuttaStep], parameterDerivitiveMatrix, 1, tempParameterMatrix, 1);
+			cpuSaxpy(parameterMatrixSize, &GLOBAL::APPLIED[rungeKuttaStep], parameterDerivitiveMatrix, 1, tempParameterMatrix, 1);
 		memset(parameterDerivitiveMatrix, 0, parameterMatrixSize * sizeof(float));*/
 		memset(parameterDerivitiveMatrix, 0, parameterMatrixSize * sizeof(float));
 
 		for (uint32_t i = layers.size(); i--;)
 			layers[i]->BackPropagate();
 		
-		/*cpuSaxpy(parameterMatrixSize, &GLOBAL::summed[rungeKuttaStep], parameterDerivitiveMatrix, 1, parameterMatrix, 1);
+		/*cpuSaxpy(parameterMatrixSize, &GLOBAL::SUMMED[rungeKuttaStep], parameterDerivitiveMatrix, 1, parameterMatrix, 1);
 		rungeKuttaStep *= ++rungeKuttaStep != 4;*/
 		cpuSaxpy(parameterMatrixSize, &GLOBAL::LEARNING_RATE, parameterDerivitiveMatrix, 1, tempParameterMatrix, 1);
 	}
