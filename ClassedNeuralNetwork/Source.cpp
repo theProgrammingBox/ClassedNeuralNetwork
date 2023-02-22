@@ -37,10 +37,11 @@ int main()
 		index -= (++index >= 100) * 100;
 		printf("error: %f\n", averageError * 0.01f);
 		
-		neuralNetwork.BackPropagate(GLOBAL::LEARNING_RATE);
+		neuralNetwork.BackPropagate();
 	}
 	
 	//neuralNetwork.Export("neuralNetwork.txt");
+
 
 	return 0;
 }

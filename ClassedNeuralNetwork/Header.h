@@ -86,13 +86,11 @@ namespace GLOBAL
 	constexpr float ZEROF = 0.0f;
 	constexpr float ONEF = 1.0f;
 
-	constexpr float LEARNING_RATE = 0.1f;
 	constexpr uint32_t ITERATIONS = 1900;
-	constexpr uint32_t BATCHES = 1;
-	float GRADIENT_SCALAR = LEARNING_RATE * invSqrt(BATCHES);
-	float HALF_GRADIENT_SCALAR = GRADIENT_SCALAR * 0.5f;
-	float THIRD_GRADIENT_SCALAR = GRADIENT_SCALAR * 0.33333333333333333333333333333333f;
-	float SIXTH_GRADIENT_SCALAR = GRADIENT_SCALAR * 0.16666666666666666666666666666667f;
+	constexpr float LEARNING_RATE = 0.1f;
+	constexpr float HALF_LEARNING_RATE = LEARNING_RATE * 0.5f;
+	constexpr float THIRD_LEARNING_RATE = LEARNING_RATE * 0.33333333333333333333333333333333f;
+	constexpr float SIXTH_LEARNING_RATE = LEARNING_RATE * 0.16666666666666666666666666666667f;
 }
 
 void cpuGenerateUniform(float* matrix, uint32_t size, float min = 0, float max = 1)

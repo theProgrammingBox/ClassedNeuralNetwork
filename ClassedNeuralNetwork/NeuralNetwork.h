@@ -62,23 +62,20 @@ public:
 		outputDerivativeMatrix = this->outputDerivativeMatrix;
 
 		layers[0]->AssignInputMatrixSize(inputMatrixSize);
-		layers[0]->LoadLayerSpecs(partitionDatas);
+		layers[0]->LoadLayerSpecs(computationPartitionData, parameterPartitionData, parameterDerivitivePartitionData);
 		for (uint32_t layer = 1; layer < layers.size(); layer++)
 		{
 			layers[layer]->AssignInputMatrixSize(layers[layer - 1]->GetOutputMatrixSize());
-			layers[layer]->LoadLayerSpecs(partitionDatas);
+			layers[layer]->LoadLayerSpecs(computationPartitionData, parameterPartitionData, parameterDerivitivePartitionData);
 		}
 
 		computationMatrixSize = 0;
-		for (ComputationInfo& computationInfo : ComputationSpecs)
-			computationMatrixSize += computationInfo.matrixSize;
+		for (PartitionData& computationPartition : computationPartitionData)
+			computationMatrixSize += computationPartition.matrixSize;
 		
 		parameterMatrixSize = 0;
-		for (ParameterInfo& parameterInfo : ParameterSpecs)
-		{
-			*parameterInfo.displacement = parameterMatrixSize;
-			parameterMatrixSize += parameterInfo.matrixSize;
-		}
+		for (PartitionData& parameterPartition : parameterPartitionData)
+			parameterMatrixSize += parameterPartition.matrixSize;
 		
 		rungeKuttaStep = 0;
 		computationMatrix = new float[computationMatrixSize];
@@ -89,46 +86,45 @@ public:
 		memcpy(tempParameterMatrix, parameterMatrix, parameterMatrixSize * sizeof(float));
 
 		float* computationMatrixIndex = computationMatrix;
-		for (ComputationInfo& computationInfo : ComputationSpecs)
+		for (PartitionData& computationPartition : computationPartitionData)
 		{
-			*computationInfo.matrix = computationMatrixIndex;
-			computationMatrixIndex += computationInfo.matrixSize;
+			*computationPartition.matrix = computationMatrixIndex;
+			computationMatrixIndex += computationPartition.matrixSize;
 		}
 
 		float* parameterMatrixLocation = tempParameterMatrix;
-		for (ParameterInfo& parameterInfo : ParameterSpecs)
+		for (PartitionData& parameterPartition : parameterPartitionData)
 		{
-			*parameterInfo.matrix = parameterMatrixLocation;
-			parameterMatrixLocation += parameterInfo.matrixSize;
+			*parameterPartition.matrix = parameterMatrixLocation;
+			parameterMatrixLocation += parameterPartition.matrixSize;
+		}
+
+		float* parameterDerivitiveMatrixLocation = parameterDerivitiveMatrix;
+		for (PartitionData& parameterDerivitivePartition : parameterDerivitivePartitionData)
+		{
+			*parameterDerivitivePartition.matrix = parameterDerivitiveMatrixLocation;
+			parameterDerivitiveMatrixLocation += parameterDerivitivePartition.matrixSize;
 		}
 
 		outputMatrix = layers.back()->GetOutputMatrix();
 		inputDerivativeMatrix = layers[0]->GetInputDerivativeMatrix();
 
 		layers.back()->AssignOutputDerivativeMatrix(outputDerivativeMatrix);
-		layers.back()->parameterDerivitiveMatrixPointer = &parameterDerivitiveMatrixLocation;
 		for (uint32_t i = layers.size() - 1; i--;)
 		{
 			layers[i + 1]->AssignInputMatrix(layers[i]->GetOutputMatrix());
 			layers[i]->AssignOutputDerivativeMatrix(layers[i + 1]->GetInputDerivativeMatrix());
-			layers[i]->parameterDerivitiveMatrixPointer = &parameterDerivitiveMatrixLocation;
 		}
 		layers[0]->AssignInputMatrix(inputMatrix);
 	}
 
 	void ForwardPropagate()
 	{
-		switch (rungeKuttaStep)
-		{
-		case 0:
-			memcpy(tempParameterMatrix, parameterMatrix, parameterMatrixSize * sizeof(float));
-			break;
-		}
 		for (auto& layer : layers)
 			layer->ForwardPropagate();
 	}
 
-	void BackPropagate(float scalar)
+	void BackPropagate()
 	{
 		for (uint32_t i = layers.size(); i--;)
 			layers[i]->BackPropagate();

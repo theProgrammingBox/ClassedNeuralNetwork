@@ -9,7 +9,12 @@ public:
 	
 	virtual void AssignInputMatrixSize(uint32_t inputMatrixSize) = 0;
 	virtual uint32_t GetOutputMatrixSize() = 0;
-	virtual void LoadLayerSpecs(std::vector<PartitionData> partitionDatas) = 0;
+	virtual void LoadLayerSpecs(
+		std::vector<PartitionData> computationPartitionData,
+		std::vector<PartitionData> parameterPartitionData,
+		std::vector<PartitionData> parameterDerivitivePartitionData
+	) = 0;
+	
 	virtual float* GetOutputMatrix() = 0;
 	virtual void AssignInputMatrix(float* inputDerivativeMatrix) = 0;
 	virtual float* GetInputDerivativeMatrix() = 0;

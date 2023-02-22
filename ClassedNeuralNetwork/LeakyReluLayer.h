@@ -40,17 +40,23 @@ public:
 		return outputMatrixSize;
 	}
 
-	void LoadLayerSpecs(std::vector<PartitionData> partitionDatas) override
+	void LoadLayerSpecs(
+		std::vector<PartitionData> computationPartitionData,
+		std::vector<PartitionData> parameterPartitionData,
+		std::vector<PartitionData> parameterDerivitivePartitionData
+	) override
 	{
 		// adds all parameters related to this layer that is not the input matrix or output derivative matrix because they are defined by other layers or the network
-		partitionDatas.emplace_back(PartitionData{ weightMatrixSize, &weightMatrix });
-		partitionDatas.emplace_back(PartitionData{ outputMatrixSize, &productMatrix });
-		partitionDatas.emplace_back(PartitionData{ outputMatrixSize, &biasMatrix });
-		partitionDatas.emplace_back(PartitionData{ outputMatrixSize, &activationMatrix });
-		partitionDatas.emplace_back(PartitionData{ outputMatrixSize, &productDerivativeMatrix });
-		partitionDatas.emplace_back(PartitionData{ outputMatrixSize, &biasDerivativeMatrix });
-		partitionDatas.emplace_back(PartitionData{ weightMatrixSize, &weightDerivativeMatrix });
-		partitionDatas.emplace_back(PartitionData{ inputMatrixSize, &inputDerivativeMatrix });
+		computationPartitionData.emplace_back(PartitionData{ outputMatrixSize, &productMatrix });
+		computationPartitionData.emplace_back(PartitionData{ outputMatrixSize, &activationMatrix });
+		computationPartitionData.emplace_back(PartitionData{ outputMatrixSize, &productDerivativeMatrix });
+		computationPartitionData.emplace_back(PartitionData{ inputMatrixSize, &inputDerivativeMatrix });
+		
+		parameterPartitionData.emplace_back(PartitionData{ weightMatrixSize, &weightMatrix });
+		parameterPartitionData.emplace_back(PartitionData{ outputMatrixSize, &biasMatrix });
+		
+		parameterDerivitivePartitionData.emplace_back(PartitionData{ weightMatrixSize, &weightDerivativeMatrix });
+		parameterDerivitivePartitionData.emplace_back(PartitionData{ outputMatrixSize, &biasDerivativeMatrix });
 
 	}
 
