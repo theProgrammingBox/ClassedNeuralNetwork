@@ -16,6 +16,7 @@ public:
 	float* computationMatrix;						// Mass matrix for things that are not parameters
 	float* parameterMatrix;							// Mass matrix for parameters
 	float* tempParameterMatrix;						// Temporary mass matrix for parameters, for Runge Kutta 4th order
+	float* savedParameterMatrix;					// Saved mass matrix for parameters, for Runge Kutta 4th order
 	float* parameterDerivitiveMatrix;				// Mass matrix for parameter derivitives
 	
 	std::vector<Layer*> layers;						// Layers of the neural network
@@ -39,6 +40,7 @@ public:
 		delete[] computationMatrix;
 		delete[] parameterMatrix;
 		delete[] tempParameterMatrix;
+		delete[] savedParameterMatrix;
 		delete[] parameterDerivitiveMatrix;
 	}
 
@@ -81,6 +83,7 @@ public:
 		computationMatrix = new float[computationMatrixSize];
 		parameterMatrix = new float[parameterMatrixSize];
 		tempParameterMatrix = new float[parameterMatrixSize];
+		savedParameterMatrix = new float[parameterMatrixSize];
 		parameterDerivitiveMatrix = new float[parameterMatrixSize];
 		cpuGenerateUniform(parameterMatrix, parameterMatrixSize, -1, 1);
 		memcpy(tempParameterMatrix, parameterMatrix, parameterMatrixSize * sizeof(float));
@@ -126,22 +129,18 @@ public:
 
 	void BackPropagate()
 	{
+		if (rungeKuttaStep)
+			memcpy(savedParameterMatrix, parameterMatrix, parameterMatrixSize * sizeof(float));
+		memcpy(tempParameterMatrix, savedParameterMatrix, parameterMatrixSize * sizeof(float));
+		if (!rungeKuttaStep)
+			cpuSaxpy(parameterMatrixSize, &GLOBAL::applied[rungeKuttaStep], parameterDerivitiveMatrix, 1, tempParameterMatrix, 1);
+		memset(parameterDerivitiveMatrix, 0, parameterMatrixSize * sizeof(float));
+
 		for (uint32_t i = layers.size(); i--;)
 			layers[i]->BackPropagate();
-		/*cpuSaxpy(parameterMatrixSize, &scalar, parameterDerivitiveMatrix, 1, parameterMatrix, 1);
-		memset(parameterDerivitiveMatrix, 0, parameterDerivitiveMatrixSize * sizeof(float));*/
-		switch (rungeKuttaStep)
-		{
-		case 0:
-			cpuSaxpy(parameterMatrixSize, &GLOBAL::HALF_GRADIENT_SCALAR, parameterDerivitiveMatrix, 1, tempParameterMatrix, 1);
-			break;
-		case 1:
-			cpuSaxpy(parameterMatrixSize, &GLOBAL::HALF_GRADIENT_SCALAR, parameterDerivitiveMatrix, 1, parameterMatrix, 1);
-			cpuSaxpy(parameterMatrixSize, &GLOBAL::HALF_GRADIENT_SCALAR, parameterDerivitiveMatrix + parameterMatrixSize, 1, tempParameterMatrix, 1);
-			break;
-		}
+		
+		cpuSaxpy(parameterMatrixSize, &GLOBAL::summed[rungeKuttaStep], parameterDerivitiveMatrix, 1, parameterMatrix, 1);
 		rungeKuttaStep -= (++rungeKuttaStep == 4) << 2;
-		parameterDerivitiveMatrixLocation = parameterDerivitiveMatrix + rungeKuttaStep * parameterMatrixSize;
 	}
 
 	void Print()

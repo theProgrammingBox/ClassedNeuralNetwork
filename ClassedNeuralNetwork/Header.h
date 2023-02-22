@@ -91,6 +91,9 @@ namespace GLOBAL
 	constexpr float HALF_LEARNING_RATE = LEARNING_RATE * 0.5f;
 	constexpr float THIRD_LEARNING_RATE = LEARNING_RATE * 0.33333333333333333333333333333333f;
 	constexpr float SIXTH_LEARNING_RATE = LEARNING_RATE * 0.16666666666666666666666666666667f;
+	
+	constexpr float applied[4] = { 0.0f, HALF_LEARNING_RATE, HALF_LEARNING_RATE, LEARNING_RATE };
+	constexpr float summed[4] = { SIXTH_LEARNING_RATE, THIRD_LEARNING_RATE, THIRD_LEARNING_RATE, SIXTH_LEARNING_RATE };
 }
 
 void cpuGenerateUniform(float* matrix, uint32_t size, float min = 0, float max = 1)

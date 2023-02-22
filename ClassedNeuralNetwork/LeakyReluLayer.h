@@ -41,9 +41,9 @@ public:
 	}
 
 	void LoadLayerSpecs(
-		std::vector<PartitionData> computationPartitionData,
-		std::vector<PartitionData> parameterPartitionData,
-		std::vector<PartitionData> parameterDerivitivePartitionData
+		std::vector<PartitionData>& computationPartitionData,
+		std::vector<PartitionData>& parameterPartitionData,
+		std::vector<PartitionData>& parameterDerivitivePartitionData
 	) override
 	{
 		// adds all parameters related to this layer that is not the input matrix or output derivative matrix because they are defined by other layers or the network
