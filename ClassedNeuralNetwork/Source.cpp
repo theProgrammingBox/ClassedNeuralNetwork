@@ -16,7 +16,9 @@ int main()
 	
 	NeuralNetwork neuralNetwork(2, inputMatrix);
 
-	neuralNetwork.AddLayer(new LeakyReluLayer(2));
+	neuralNetwork.AddLayer(new LeakyReluLayer(5));
+	neuralNetwork.AddLayer(new LeakyReluLayer(5));
+	neuralNetwork.AddLayer(new LeakyReluLayer(5));
 	neuralNetwork.AddLayer(new LeakyReluLayer(1));
 	neuralNetwork.Print();
 	neuralNetwork.Initialize(outputMatrix, outputDerivativeMatrix, inputDerivativeMatrix);
@@ -26,10 +28,12 @@ int main()
 	float averageError = 0;
 	for (uint32_t i = GLOBAL::ITERATIONS; i--;)
 	{
-		inputMatrix[0] = GLOBAL::random.Rfloat(-10, 10);
-		inputMatrix[1] = GLOBAL::random.Rfloat(-10, 10);
+		inputMatrix[0] = GLOBAL::random.Ruint32() & 1;
+		inputMatrix[1] = GLOBAL::random.Ruint32() & 1;
+		
 		neuralNetwork.ForwardPropagate();
-		outputDerivativeMatrix[0] = (inputMatrix[0] + inputMatrix[1]) * 0.5 - outputMatrix[0];
+		bool expectedOutput = bool(inputMatrix[0]) ^ bool(inputMatrix[1]);
+		outputDerivativeMatrix[0] = expectedOutput - outputMatrix[0];
 		
 		averageError -= errors[index];
 		errors[index] = abs(outputDerivativeMatrix[0]);
