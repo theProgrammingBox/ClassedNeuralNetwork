@@ -16,9 +16,8 @@ int main()
 	
 	NeuralNetwork neuralNetwork(2, inputMatrix);
 
-	neuralNetwork.AddLayer(new LeakyReluLayer(5));
-	neuralNetwork.AddLayer(new LeakyReluLayer(5));
-	neuralNetwork.AddLayer(new LeakyReluLayer(5));
+	neuralNetwork.AddLayer(new LeakyReluLayer(2));
+	neuralNetwork.AddLayer(new LeakyReluLayer(2));
 	neuralNetwork.AddLayer(new LeakyReluLayer(1));
 	neuralNetwork.Print();
 	neuralNetwork.Initialize(outputMatrix, outputDerivativeMatrix, inputDerivativeMatrix);
@@ -30,10 +29,14 @@ int main()
 	{
 		inputMatrix[0] = GLOBAL::random.Ruint32() & 1;
 		inputMatrix[1] = GLOBAL::random.Ruint32() & 1;
+		//printf("input: %f %f\n", inputMatrix[0], inputMatrix[1]);
 		
 		neuralNetwork.ForwardPropagate();
 		bool expectedOutput = bool(inputMatrix[0]) ^ bool(inputMatrix[1]);
-		outputDerivativeMatrix[0] = expectedOutput - outputMatrix[0];
+		outputDerivativeMatrix[0] = float(expectedOutput) - outputMatrix[0];
+		/*printf("output: %f\n", outputMatrix[0]);
+		printf("expected output: %f\n", float(expectedOutput));
+		printf("output derivative: %f\n", outputDerivativeMatrix[0]);*/
 		
 		averageError -= errors[index];
 		errors[index] = abs(outputDerivativeMatrix[0]);
