@@ -35,7 +35,7 @@ int main()
 
 		neuralNetwork.Reset();
 		
-		for (uint32_t i = GLOBAL::ITERATIONS; i--;)
+		for (uint32_t i = GLOBAL::ITERATIONS * 10; i--;)
 		{
 			inputMatrix[0] = GLOBAL::random.Ruint32() & 1;
 			inputMatrix[1] = GLOBAL::random.Ruint32() & 1;
@@ -48,7 +48,7 @@ int main()
 			errors[index] = abs(outputDerivativeMatrix[0]);
 			averageError += errors[index];
 			index *= ++index != 100;
-			if (i % 1000 == 0)
+			if (i % 10 == 0)
 				//printf("error: %f\n", averageError * 0.01f);
 				dataFile.write((char*)&averageError, 4);
 
