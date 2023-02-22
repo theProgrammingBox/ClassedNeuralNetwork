@@ -17,9 +17,7 @@ int main()
 	NeuralNetwork neuralNetwork(2, inputMatrix);
 
 	neuralNetwork.AddLayer(new LeakyReluLayer(2));
-	neuralNetwork.AddLayer(new LeakyReluLayer(2));
 	neuralNetwork.AddLayer(new LeakyReluLayer(1));
-	neuralNetwork.Print();
 	neuralNetwork.Initialize(outputMatrix, outputDerivativeMatrix, inputDerivativeMatrix);
 
 	uint32_t index = 0;
@@ -45,6 +43,7 @@ int main()
 		printf("error: %f\n", averageError * 0.01f);
 		
 		neuralNetwork.BackPropagate();
+		neuralNetwork.Print();
 	}
 	
 	//neuralNetwork.Export("neuralNetwork.txt");

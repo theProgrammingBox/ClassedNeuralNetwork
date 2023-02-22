@@ -142,22 +142,18 @@ public:
 	void Print() override
 	{
 		printf("LeakyReluLayer\n");
-		/*printf("\n");
+		printf("\n");
 		PrintMatrix(inputMatrix, 1, inputMatrixSize, "inputMatrix");
 		PrintMatrix(weightMatrix, inputMatrixSize, outputMatrixSize, "weightMatrix");
 		PrintMatrix(biasMatrix, 1, outputMatrixSize, "biasMatrix");
 		PrintMatrix(productMatrix, 1, outputMatrixSize, "productMatrix");
 		PrintMatrix(activationMatrix, 1, outputMatrixSize, "activationMatrix");
-		
-		float* weightDerivativeMatrix = *dynamicDerivativeMatrixPointer + weightDerivativeMatrixDisplacement;
-		float* biasDerivativeMatrix = *dynamicDerivativeMatrixPointer + biasDerivativeMatrixDisplacement;
-		
 		PrintMatrix(inputDerivativeMatrix, 1, inputMatrixSize, "inputDerivativeMatrix");
 		PrintMatrix(biasDerivativeMatrix, 1, outputMatrixSize, "biasDerivativeMatrix");
 		PrintMatrix(weightDerivativeMatrix, inputMatrixSize, outputMatrixSize, "weightDerivativeMatrix");
 		PrintMatrix(productDerivativeMatrix, 1, outputMatrixSize, "productDerivativeMatrix");
 		PrintMatrix(activationDerivativeMatrix, 1, outputMatrixSize, "activationDerivativeMatrix");
-		printf("\n");*/
+		printf("\n");
 	}
 
 	/*void Export(std::ofstream& file) override
