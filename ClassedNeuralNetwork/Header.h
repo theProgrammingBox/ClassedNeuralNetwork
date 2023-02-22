@@ -86,7 +86,7 @@ namespace GLOBAL
 	constexpr float ZEROF = 0.0f;
 	constexpr float ONEF = 1.0f;
 
-	constexpr uint32_t ITERATIONS = 1900;
+	constexpr uint32_t ITERATIONS = 1000000;
 	constexpr float LEARNING_RATE = 0.1f;
 	constexpr float HALF_LEARNING_RATE = LEARNING_RATE * 0.5f;
 	constexpr float THIRD_LEARNING_RATE = LEARNING_RATE * 0.33333333333333333333333333333333f;
