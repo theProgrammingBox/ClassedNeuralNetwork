@@ -85,7 +85,7 @@ public:
 		tempParameterMatrix = new float[parameterMatrixSize];
 		savedParameterMatrix = new float[parameterMatrixSize];
 		parameterDerivitiveMatrix = new float[parameterMatrixSize];
-		cpuGenerateUniform(parameterMatrix, parameterMatrixSize, -1, 1);
+		cpuGenerateUniform(parameterMatrix, parameterMatrixSize, -2, 2);
 		memcpy(tempParameterMatrix, parameterMatrix, parameterMatrixSize * sizeof(float));
 
 		float* computationMatrixIndex = computationMatrix;
@@ -123,6 +123,7 @@ public:
 
 	void ForwardPropagate()
 	{
+		memset(computationMatrix, 0, computationMatrixSize * sizeof(float));
 		for (auto& layer : layers)
 			layer->ForwardPropagate();
 	}
