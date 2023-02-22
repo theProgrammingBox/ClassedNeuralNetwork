@@ -3,8 +3,8 @@
 
 /*
 TODO:
-1. export and import neural network
-2. Runge Kutta 4th order
+1. visualize
+2. export and import neural network
 */
 
 int main()
@@ -16,7 +16,7 @@ int main()
 	
 	NeuralNetwork neuralNetwork(2, inputMatrix);
 
-	neuralNetwork.AddLayer(new LeakyReluLayer(2));
+	neuralNetwork.AddLayer(new LeakyReluLayer(3));
 	neuralNetwork.AddLayer(new LeakyReluLayer(1));
 	neuralNetwork.Initialize(outputMatrix, outputDerivativeMatrix, inputDerivativeMatrix);
 
