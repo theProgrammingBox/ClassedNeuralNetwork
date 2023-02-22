@@ -3,7 +3,7 @@
 
 /*
 TODO:
-1. visualize
+1. add Batchsize because right now, runge kutta isn't working that well, perhaps because of the noisy gradient
 2. export and import neural network
 */
 
