@@ -7,6 +7,11 @@ TODO:
 2. export and import neural network
 */
 
+/*
+IMPORTANT LESSONS
+1. runge kutta 4 seems to be 4 times slower due to the 4 iterations needed for 1 step
+*/
+
 int main()
 {
 	float* inputMatrix = nullptr;
